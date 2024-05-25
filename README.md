@@ -64,7 +64,7 @@ cargo install sig-rs
 ```bash
 Interactive grep (for streaming)
 
-Usage: sig-rs [OPTIONS]
+Usage: sig [OPTIONS]
 
 Options:
       --retrieval-timeout <RETRIEVAL_TIMEOUT_MILLIS>
