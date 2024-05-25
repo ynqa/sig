@@ -1,9 +1,9 @@
 [package]
-name = "sig-rs"
+name = "sigrs"
 version = "0.1.0"
 authors = ["ynqa <un.pensiero.vano@gmail.com>"]
 edition = "2021"
-description = "Interactive grep for streaming"
+description = "Interactive grep (for streaming)"
 repository = "https://github.com/ynqa/sig"
 license = "MIT"
 readme = "README.md"
