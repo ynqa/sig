@@ -2,7 +2,7 @@
 
 [![ci](https://github.com/ynqa/sig/actions/workflows/ci.yml/badge.svg)](https://github.com/ynqa/sig/actions/workflows/ci.yml)
 
-Interactive grep (for streamings).
+Interactive grep
 
 |![sig.gif](https://github.com/ynqa/ynqa/blob/master/demo/sig.gif)|![sig_archived.gif](https://github.com/ynqa/ynqa/blob/master/demo/sig_archived.gif)|
 |---|---|
