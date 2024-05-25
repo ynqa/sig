@@ -37,6 +37,27 @@ brew install ynqa/tap/sigrs
 cargo install sigrs
 ```
 
+### Nix (flakes)
+
+Add it as an input to your flake
+
+```nix
+inputs = {
+  sig.url = 'github:ynqa/sig/<optional-ref>'
+}
+```
+
+add it to a shell:
+
+```nix
+nix shell gituhb:ynqa/sig
+```
+
+or run it directly:
+```nix
+cat README.md | nix run gituhb:ynqa/sig -- --archived
+```
+
 ## Keymap
 
 | Key                  | Action
