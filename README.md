@@ -28,7 +28,7 @@ Interactive grep
 ### Homebrew
 
 ```bash
-brew install ynqa/tap/sig
+brew install ynqa/tap/sigrs
 ```
 
 ### Cargo
