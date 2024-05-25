@@ -38,7 +38,8 @@ fn matched(queries: &[&str], line: &str) -> anyhow::Result<Vec<Match>> {
 pub fn styled(query: &str, line: &str, highlight_style: ContentStyle) -> Option<StyledGraphemes> {
     let piped = &query
         .split('|')
-        .filter(|s| !s.trim().is_empty())
+        .map(|s| s.trim())
+        .filter(|s| !s.is_empty())
         .collect::<Vec<&str>>();
 
     let mut styled = StyledGraphemes::from(line);
