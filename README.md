@@ -56,6 +56,26 @@ Or run it directly:
 cat README.md | nix run gituhb:ynqa/sig -- --archived
 ```
 
+### Nix (classic)
+
+Fetch the source and use it, e.g. in your shell:
+
+```nix
+let
+  pkgs = import <nixpkgs> {};
+
+  sig = import (fetchFromGitHub {
+    owner = "ynqa";
+    repo = "sig";
+    rev = "v0.1.0";
+    hash = "sha256-KHXBeQFmuA3YO9AN5dkY/fl/z2RdbR6AqSSEGUNrxt4=";
+  });
+in
+  mkShell {
+    packages = [sig];
+  }
+```
+
 ## Keymap
 
 | Key                  | Action
