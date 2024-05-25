@@ -21,18 +21,11 @@ pub fn default(
 
     match event {
         Event::Key(KeyEvent {
-            code: KeyCode::Char('f'),
-            modifiers: KeyModifiers::CONTROL,
-            kind: KeyEventKind::Press,
-            state: KeyEventState::NONE,
-        }) => return Ok(PromptSignal::Quit),
-
-        Event::Key(KeyEvent {
             code: KeyCode::Char('c'),
             modifiers: KeyModifiers::CONTROL,
             kind: KeyEventKind::Press,
             state: KeyEventState::NONE,
-        }) => return Err(anyhow::anyhow!("ctrl-c")),
+        }) => return Err(anyhow::anyhow!("ctrl+c")),
 
         // Move cursor (text editor)
         Event::Key(KeyEvent {

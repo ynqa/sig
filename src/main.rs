@@ -30,7 +30,7 @@ pub struct Args {
     #[arg(
         long = "retrieval-timeout",
         default_value = "10",
-        help = "Timeout to read a next line from the stream in milliseconds.",
+        help = "Timeout to read a next line from the stream in milliseconds."
     )]
     pub retrieval_timeout_millis: u64,
 
@@ -39,7 +39,7 @@ pub struct Args {
         default_value = "10",
         help = "Interval to render a log line in milliseconds.",
         long_help = "Adjust this value to prevent screen flickering
-        when a large volume of logs is rendered in a short period.",
+        when a large volume of logs is rendered in a short period."
     )]
     pub render_interval_millis: u64,
 
@@ -52,16 +52,23 @@ pub struct Args {
         This value is used for temporary storage of log data
         and should be adjusted based on the system's memory capacity.
         Increasing this value allows for more logs to be stored temporarily,
-        which can be beneficial when digging deeper into logs with the digger.",
+        which can be beneficial when digging deeper into logs with the digger."
     )]
     pub queue_capacity: usize,
 
     #[arg(
         long = "archived",
         default_value = "false",
-        help = "Archived mode to grep through static data.",
+        help = "Archived mode to grep through static data."
     )]
     pub archived: bool,
+}
+
+impl Drop for Args {
+    fn drop(&mut self) {
+        disable_raw_mode().ok();
+        execute!(io::stdout(), cursor::Show).ok();
+    }
 }
 
 #[tokio::main]
@@ -134,7 +141,7 @@ async fn main() -> anyhow::Result<()> {
             highlight_style,
         )?;
     } else {
-        while let Ok(queue) = sig::run(
+        let queue = sig::run(
             text_editor::State {
                 texteditor: Default::default(),
                 history: Default::default(),
@@ -152,54 +159,38 @@ async fn main() -> anyhow::Result<()> {
             Duration::from_millis(args.render_interval_millis),
             args.queue_capacity,
         )
-        .await
-        {
-            crossterm::execute!(
-                io::stdout(),
-                crossterm::terminal::Clear(crossterm::terminal::ClearType::All),
-                crossterm::terminal::Clear(crossterm::terminal::ClearType::Purge),
-                cursor::MoveTo(0, 0),
-            )?;
+        .await?;
 
-            archived::run(
-                text_editor::State {
-                    texteditor: Default::default(),
-                    history: Default::default(),
-                    prefix: String::from("❯❯❯ "),
-                    mask: Default::default(),
-                    prefix_style: StyleBuilder::new().fgc(Color::DarkBlue).build(),
-                    active_char_style: StyleBuilder::new().bgc(Color::DarkCyan).build(),
-                    inactive_char_style: StyleBuilder::new().build(),
-                    edit_mode: Default::default(),
-                    word_break_chars: Default::default(),
-                    lines: Default::default(),
-                },
-                listbox::State {
-                    listbox: listbox::Listbox::from_iter(queue),
-                    cursor: String::from("❯ "),
-                    active_item_style: None,
-                    inactive_item_style: None,
-                    lines: Default::default(),
-                },
-                highlight_style,
-            )?;
+        crossterm::execute!(
+            io::stdout(),
+            crossterm::terminal::Clear(crossterm::terminal::ClearType::All),
+            crossterm::terminal::Clear(crossterm::terminal::ClearType::Purge),
+            cursor::MoveTo(0, 0),
+        )?;
 
-            // Re-enable raw mode and hide the cursor again here
-            // because they are disabled and shown, respectively, by promkit.
-            enable_raw_mode()?;
-            execute!(io::stdout(), cursor::Hide)?;
-
-            crossterm::execute!(
-                io::stdout(),
-                crossterm::terminal::Clear(crossterm::terminal::ClearType::All),
-                crossterm::terminal::Clear(crossterm::terminal::ClearType::Purge),
-                cursor::MoveTo(0, 0),
-            )?;
-        }
+        archived::run(
+            text_editor::State {
+                texteditor: Default::default(),
+                history: Default::default(),
+                prefix: String::from("❯❯❯ "),
+                mask: Default::default(),
+                prefix_style: StyleBuilder::new().fgc(Color::DarkBlue).build(),
+                active_char_style: StyleBuilder::new().bgc(Color::DarkCyan).build(),
+                inactive_char_style: StyleBuilder::new().build(),
+                edit_mode: Default::default(),
+                word_break_chars: Default::default(),
+                lines: Default::default(),
+            },
+            listbox::State {
+                listbox: listbox::Listbox::from_iter(queue),
+                cursor: String::from("❯ "),
+                active_item_style: None,
+                inactive_item_style: None,
+                lines: Default::default(),
+            },
+            highlight_style,
+        )?;
     }
-
-    execute!(io::stdout(), cursor::Show)?;
-    disable_raw_mode()?;
 
     Ok(())
 }

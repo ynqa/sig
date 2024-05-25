@@ -17,7 +17,7 @@ pub fn default(event: &Event, state: &mut text_editor::State) -> anyhow::Result<
             modifiers: KeyModifiers::CONTROL,
             kind: KeyEventKind::Press,
             state: KeyEventState::NONE,
-        }) => return Err(anyhow::anyhow!("ctrl-c")),
+        }) => return Err(anyhow::anyhow!("ctrl+c")),
 
         // Move cursor.
         Event::Key(KeyEvent {

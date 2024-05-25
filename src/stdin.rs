@@ -32,6 +32,5 @@ pub async fn streaming(
             _ => break,
         }
     }
-    drop(tx);
     Ok(())
 }
