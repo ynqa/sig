@@ -787,7 +787,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "sig"
+name = "sig-rs"
 version = "0.1.0"
 dependencies = [
  "anyhow",

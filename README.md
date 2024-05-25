@@ -29,7 +29,7 @@ brew install ynqa/tap/sig
 ### Cargo
 
 ```bash
-cargo install sig
+cargo install sig-rs
 ```
 
 ## Keymap
