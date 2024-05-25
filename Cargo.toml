@@ -8,6 +8,10 @@ repository = "https://github.com/ynqa/sig"
 license = "MIT"
 readme = "README.md"
 
+[[bin]]
+name = "sig"
+path = "src/main.rs"
+
 [dependencies]
 anyhow = "1.0.83"
 clap = { version = "4.5.4", features = ["derive"] }

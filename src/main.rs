@@ -23,14 +23,14 @@ mod sig;
 mod stdin;
 mod terminal;
 
-/// Interactive grep for streaming
+/// Interactive grep (for streaming)
 #[derive(Parser)]
 #[command(name = "sig", version)]
 pub struct Args {
     #[arg(
         long = "retrieval-timeout",
         default_value = "10",
-        help = "Timeout to read a next line from the stream in milliseconds."
+        help = "Timeout to read a next line from the stream in milliseconds.",
     )]
     pub retrieval_timeout_millis: u64,
 
@@ -39,7 +39,7 @@ pub struct Args {
         default_value = "10",
         help = "Interval to render a log line in milliseconds.",
         long_help = "Adjust this value to prevent screen flickering
-        when a large volume of logs is rendered in a short period."
+        when a large volume of logs is rendered in a short period.",
     )]
     pub render_interval_millis: u64,
 
@@ -52,11 +52,15 @@ pub struct Args {
         This value is used for temporary storage of log data
         and should be adjusted based on the system's memory capacity.
         Increasing this value allows for more logs to be stored temporarily,
-        which can be beneficial when digging deeper into logs with the digger."
+        which can be beneficial when digging deeper into logs with the digger.",
     )]
     pub queue_capacity: usize,
 
-    #[arg(long = "archived", default_value = "false")]
+    #[arg(
+        long = "archived",
+        default_value = "false",
+        help = "Archived mode to grep through static data.",
+    )]
     pub archived: bool,
 }
 
