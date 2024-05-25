@@ -39,21 +39,19 @@ cargo install sigrs
 
 ### Nix (flakes)
 
-Add it as an input to your flake
-
+Add it as an input to your flake:
 ```nix
 inputs = {
   sig.url = 'github:ynqa/sig/<optional-ref>'
 }
 ```
 
-add it to a shell:
-
+Creat a shell with it:
 ```nix
 nix shell gituhb:ynqa/sig
 ```
 
-or run it directly:
+Or run it directly:
 ```nix
 cat README.md | nix run gituhb:ynqa/sig -- --archived
 ```
