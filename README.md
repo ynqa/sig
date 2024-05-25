@@ -46,7 +46,7 @@ inputs = {
 }
 ```
 
-Creat a shell with it:
+Create a shell with it:
 ```nix
 nix shell gituhb:ynqa/sig
 ```
