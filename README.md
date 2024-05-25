@@ -64,14 +64,14 @@ Fetch the source and use it, e.g. in your shell:
 let
   pkgs = import <nixpkgs> {};
 
-  sig = import (fetchFromGitHub {
+  sig = pkgs.callPackage (pkgs.fetchFromGitHub {
     owner = "ynqa";
     repo = "sig";
     rev = "v0.1.0";
     hash = "sha256-KHXBeQFmuA3YO9AN5dkY/fl/z2RdbR6AqSSEGUNrxt4=";
-  });
+  }) {};
 in
-  mkShell {
+  pkgs.mkShell {
     packages = [sig];
   }
 ```
