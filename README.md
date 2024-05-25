@@ -4,6 +4,9 @@
 
 Interactive grep (for streamings).
 
+|![sig.gif](https://github.com/ynqa/ynqa/blob/master/demo/sig.gif)|![sig_archived.gif](https://github.com/ynqa/ynqa/blob/master/demo/sig_archived.gif)|
+|---|---|
+
 ## Features
 
 - Interactive grep (for streaming)
