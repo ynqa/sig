@@ -48,12 +48,12 @@ inputs = {
 
 Create a shell with it:
 ```nix
-nix shell gituhb:ynqa/sig
+nix shell github:ynqa/sig
 ```
 
 Or run it directly:
 ```nix
-cat README.md | nix run gituhb:ynqa/sig -- --archived
+cat README.md | nix run github:ynqa/sig -- --archived
 ```
 
 ### Nix (classic)
