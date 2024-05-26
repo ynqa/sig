@@ -12,7 +12,10 @@ in
 
     src = ./.;
 
-    cargoHash = "sha256-3nNdCz6Yjnnle/sG6kqGCAcoVRNhc4BOteWGDDl5oWs=";
+    cargoLock = {
+      lockFile = ./Cargo.lock;
+      allowBuiltinFetchGit = true;
+    };
 
     meta = {
       description = "Interactive grep (for streaming)";
