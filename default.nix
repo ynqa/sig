@@ -12,7 +12,7 @@ in
 
     src = ./.;
 
-		cargoHash = "sha256-yz/DPJJxtsHpJLpTMAYfsq9miIs48F+FeSnmkQ707uA=";
+		cargoHash = "sha256-3nNdCz6Yjnnle/sG6kqGCAcoVRNhc4BOteWGDDl5oWs=";
 
     meta = {
       description = "Interactive grep (for streaming)";
