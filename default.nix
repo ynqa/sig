@@ -10,7 +10,10 @@ in
     pname = "sig";
     inherit version;
 
-    src = ./.;
+    src = builtins.path {
+      path = ./.;
+      name = repo;
+    };
 
     cargoLock = {
       lockFile = ./Cargo.lock;
