@@ -62,13 +62,15 @@ Fetch the source and use it, e.g. in your shell:
 
 ```nix
 let
-  pkgs = import <nixpkgs> {};
+  # At the time of writing this, pkgs need to be unstable for the package to build properly
+  # (requires Rust 1.74, stable has 1.73)
+  pkgs = import <nixpkgs-unstable> {};
 
   sig = pkgs.callPackage (pkgs.fetchFromGitHub {
     owner = "ynqa";
     repo = "sig";
-    rev = "v0.1.0";
-    hash = "sha256-KHXBeQFmuA3YO9AN5dkY/fl/z2RdbR6AqSSEGUNrxt4=";
+    rev = "<revision, e.g. master/v0.1.0/etc.>";
+    hash = ""; # Build first, put proper hash in place
   }) {};
 in
   pkgs.mkShell {

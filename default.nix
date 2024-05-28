@@ -10,9 +10,15 @@ in
     pname = "sig";
     inherit version;
 
-    src = ./.;
+    src = builtins.path {
+      path = ./.;
+      name = repo;
+    };
 
-		cargoHash = "sha256-yz/DPJJxtsHpJLpTMAYfsq9miIs48F+FeSnmkQ707uA=";
+    cargoLock = {
+      lockFile = ./Cargo.lock;
+      allowBuiltinFetchGit = true;
+    };
 
     meta = {
       description = "Interactive grep (for streaming)";
