@@ -57,6 +57,7 @@ pub struct Args {
     pub queue_capacity: usize,
 
     #[arg(
+        short = 'a',
         long = "archived",
         default_value = "false",
         help = "Archived mode to grep through static data."
