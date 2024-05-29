@@ -62,6 +62,14 @@ pub struct Args {
         help = "Archived mode to grep through static data."
     )]
     pub archived: bool,
+
+    #[arg(
+        short = 'i',
+        long = "ignore-case",
+        default_value = "false",
+        help = "Case insensitive search."
+    )]
+    pub case_insensitive: bool,
 }
 
 impl Drop for Args {
@@ -139,6 +147,7 @@ async fn main() -> anyhow::Result<()> {
                 lines: Default::default(),
             },
             highlight_style,
+            args.case_insensitive,
         )?;
     } else {
         let queue = sig::run(
@@ -158,6 +167,7 @@ async fn main() -> anyhow::Result<()> {
             Duration::from_millis(args.retrieval_timeout_millis),
             Duration::from_millis(args.render_interval_millis),
             args.queue_capacity,
+            args.case_insensitive,
         )
         .await?;
 
@@ -189,6 +199,7 @@ async fn main() -> anyhow::Result<()> {
                 lines: Default::default(),
             },
             highlight_style,
+            args.case_insensitive,
         )?;
     }
 

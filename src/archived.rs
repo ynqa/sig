@@ -19,6 +19,7 @@ struct Archived {
     text_editor_snapshot: Snapshot<text_editor::State>,
     lines: Snapshot<listbox::State>,
     highlight_style: ContentStyle,
+    case_insensitive: bool,
 }
 
 impl promkit::Finalizer for Archived {
@@ -63,7 +64,14 @@ impl promkit::Renderer for Archived {
                 .listbox
                 .items()
                 .par_iter()
-                .filter_map(|line| sig::styled(&query, &line.to_string(), self.highlight_style))
+                .filter_map(|line| {
+                    sig::styled(
+                        &query,
+                        &line.to_string(),
+                        self.highlight_style,
+                        self.case_insensitive,
+                    )
+                })
                 .collect();
 
             self.lines.after_mut().listbox = listbox::Listbox::from_iter(list);
@@ -76,6 +84,7 @@ pub fn run(
     text_editor: text_editor::State,
     lines: listbox::State,
     highlight_style: ContentStyle,
+    case_insensitive: bool,
 ) -> anyhow::Result<()> {
     Prompt {
         renderer: Archived {
@@ -83,6 +92,7 @@ pub fn run(
             text_editor_snapshot: Snapshot::new(text_editor),
             lines: Snapshot::new(lines),
             highlight_style,
+            case_insensitive,
         },
     }
     .run()
