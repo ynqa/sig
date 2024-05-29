@@ -114,11 +114,13 @@ Options:
       --retrieval-timeout <RETRIEVAL_TIMEOUT_MILLIS>
           Timeout to read a next line from the stream in milliseconds. [default: 10]
       --render-interval <RENDER_INTERVAL_MILLIS>
-          Interval to render a log line in milliseconds. [default: 10]
+          Interval to render a line in milliseconds. [default: 10]
   -q, --queue-capacity <QUEUE_CAPACITY>
-          Queue capacity to store the logs. [default: 1000]
-      --archived
+          Queue capacity to store lines. [default: 1000]
+  -a, --archived
           Archived mode to grep through static data.
+  -i, --ignore-case
+          Case insensitive search.
   -h, --help
           Print help (see more with '--help')
   -V, --version
