@@ -71,6 +71,14 @@ pub struct Args {
         help = "Case insensitive search."
     )]
     pub case_insensitive: bool,
+
+    #[arg(
+        long = "rc",
+        help = "Command to execute on initial and retries (standard mode only).",
+        long_help = "This command is invoked initially and
+        whenever a retry is triggered according to key mappings."
+    )]
+    pub retry_command: Option<String>,
 }
 
 impl Drop for Args {
@@ -149,6 +157,8 @@ async fn main() -> anyhow::Result<()> {
             },
             highlight_style,
             args.case_insensitive,
+            // In archived mode, command for retry is meaningless.
+            None,
         )?;
     } else {
         let queue = sig::run(
@@ -201,6 +211,7 @@ async fn main() -> anyhow::Result<()> {
             },
             highlight_style,
             args.case_insensitive,
+            args.retry_command.clone(),
         )?;
     }
 

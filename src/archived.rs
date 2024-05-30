@@ -20,6 +20,7 @@ struct Archived {
     lines: Snapshot<listbox::State>,
     highlight_style: ContentStyle,
     case_insensitive: bool,
+    retry_command: Option<String>,
 }
 
 impl promkit::Finalizer for Archived {
@@ -85,6 +86,7 @@ pub fn run(
     lines: listbox::State,
     highlight_style: ContentStyle,
     case_insensitive: bool,
+    retry_command: Option<String>,
 ) -> anyhow::Result<()> {
     Prompt {
         renderer: Archived {
@@ -93,6 +95,7 @@ pub fn run(
             lines: Snapshot::new(lines),
             highlight_style,
             case_insensitive,
+            retry_command,
         },
     }
     .run()

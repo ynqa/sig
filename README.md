@@ -13,7 +13,7 @@ Interactive grep
   - *sig* allows users to interactively search through (streaming) data,
     updating results in real-time.
 - Archived mode
-  - In Archived mode, since there is no seeking capability
+  - In archived mode, since there is no seeking capability
     for streaming data received through a pipe,
     it is not possible to search backwards without exiting the process.
     Therefore, in *sig*, the latest N entries of streaming data are saved,
