@@ -37,9 +37,9 @@ pub struct Args {
     #[arg(
         long = "render-interval",
         default_value = "10",
-        help = "Interval to render a log line in milliseconds.",
+        help = "Interval to render a line in milliseconds.",
         long_help = "Adjust this value to prevent screen flickering
-        when a large volume of logs is rendered in a short period."
+        when a large volume of lines is rendered in a short period."
     )]
     pub render_interval_millis: u64,
 
@@ -47,21 +47,30 @@ pub struct Args {
         short = 'q',
         long = "queue-capacity",
         default_value = "1000",
-        help = "Queue capacity to store the logs.",
-        long_help = "Queue capacity for storing logs.
-        This value is used for temporary storage of log data
+        help = "Queue capacity to store lines.",
+        long_help = "Queue capacity for storing lines.
+        This value is used for temporary storage of lines
         and should be adjusted based on the system's memory capacity.
-        Increasing this value allows for more logs to be stored temporarily,
-        which can be beneficial when digging deeper into logs with the digger."
+        Increasing this value allows for more lines to be stored temporarily,
+        which can be beneficial when digging deeper into lines with the digger."
     )]
     pub queue_capacity: usize,
 
     #[arg(
+        short = 'a',
         long = "archived",
         default_value = "false",
         help = "Archived mode to grep through static data."
     )]
     pub archived: bool,
+
+    #[arg(
+        short = 'i',
+        long = "ignore-case",
+        default_value = "false",
+        help = "Case insensitive search."
+    )]
+    pub case_insensitive: bool,
 }
 
 impl Drop for Args {
@@ -139,6 +148,7 @@ async fn main() -> anyhow::Result<()> {
                 lines: Default::default(),
             },
             highlight_style,
+            args.case_insensitive,
         )?;
     } else {
         let queue = sig::run(
@@ -158,6 +168,7 @@ async fn main() -> anyhow::Result<()> {
             Duration::from_millis(args.retrieval_timeout_millis),
             Duration::from_millis(args.render_interval_millis),
             args.queue_capacity,
+            args.case_insensitive,
         )
         .await?;
 
@@ -189,6 +200,7 @@ async fn main() -> anyhow::Result<()> {
                 lines: Default::default(),
             },
             highlight_style,
+            args.case_insensitive,
         )?;
     }
 

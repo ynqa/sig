@@ -21,9 +21,10 @@ use promkit::{
 mod keymap;
 use crate::{stdin, terminal::Terminal};
 
-fn matched(queries: &[&str], line: &str) -> anyhow::Result<Vec<Match>> {
+fn matched(queries: &[&str], line: &str, case_insensitive: bool) -> anyhow::Result<Vec<Match>> {
     let mut matched = Vec::new();
     RegexMatcherBuilder::new()
+        .case_insensitive(case_insensitive)
         .build_many(queries)?
         .find_iter_at(line.as_bytes(), 0, |m| {
             if m.start() >= line.as_bytes().len() {
@@ -35,7 +36,12 @@ fn matched(queries: &[&str], line: &str) -> anyhow::Result<Vec<Match>> {
     Ok(matched)
 }
 
-pub fn styled(query: &str, line: &str, highlight_style: ContentStyle) -> Option<StyledGraphemes> {
+pub fn styled(
+    query: &str,
+    line: &str,
+    highlight_style: ContentStyle,
+    case_insensitive: bool,
+) -> Option<StyledGraphemes> {
     let piped = &query
         .split('|')
         .map(|s| s.trim())
@@ -47,7 +53,7 @@ pub fn styled(query: &str, line: &str, highlight_style: ContentStyle) -> Option<
     if query.is_empty() {
         Some(styled)
     } else {
-        match matched(piped, line) {
+        match matched(piped, line, case_insensitive) {
             Ok(matches) => {
                 if matches.is_empty() {
                     None
@@ -71,6 +77,7 @@ pub async fn run(
     retrieval_timeout: Duration,
     render_interval: Duration,
     queue_capacity: usize,
+    case_insensitive: bool,
 ) -> anyhow::Result<VecDeque<String>> {
     let keymap = ActiveKeySwitcher::new("default", keymap::default);
     let size = crossterm::terminal::size()?;
@@ -112,6 +119,7 @@ pub async fn run(
                         &text_editor.texteditor.text_without_cursor().to_string(),
                         &line,
                         highlight_style,
+                        case_insensitive,
                     ) {
                         let matrix = styled.matrixify(size.0 as usize, size.1 as usize, 0).0;
                         let term = readonly_term.read().await;
