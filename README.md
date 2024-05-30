@@ -22,6 +22,7 @@ Interactive grep
     based on key inputs at any given moment.
   - Additionally, by starting in this mode,
     it is also possible to grep through static data such as files.
+    - like [ugrep](https://github.com/Genivia/ugrep) with `-Q` option.
 
 ## Installation
 
