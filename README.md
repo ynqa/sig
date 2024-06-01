@@ -12,6 +12,14 @@ Interactive grep
 - Interactive grep (for streaming)
   - *sig* allows users to interactively search through (streaming) data,
     updating results in real-time.
+- Re-execute command
+  - If `--cmd` is specified instread of piping data to *sig*,
+    the command will be executed on initial and retries.
+  - This feature is designed to address the issue where data streams
+    past while the user is fine-tuning the search criteria.
+    In other words, even if the data has already passed,
+    executing the command again allows
+    the retrieval of the data for re-evaluation.
 - Archived mode
   - In archived mode, since there is no seeking capability
     for streaming data received through a pipe,
@@ -84,6 +92,7 @@ in
 | Key                  | Action
 | :-                   | :-
 | <kbd>Ctrl + C</kbd>  | Exit `sig`
+| <kbd>Ctrl + R</kbd>  | Retry command if `--cmd` is specified
 | <kbd>Ctrl + F</kbd>  | Enter Archived mode
 | <kbd>←</kbd>         | Move the cursor one character to the left
 | <kbd>→</kbd>         | Move the cursor one character to the right
@@ -122,6 +131,8 @@ Options:
           Archived mode to grep through static data.
   -i, --ignore-case
           Case insensitive search.
+      --cmd <CMD>
+          Command to execute on initial and retries.
   -h, --help
           Print help (see more with '--help')
   -V, --version
