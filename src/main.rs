@@ -86,7 +86,7 @@ pub struct Args {
         long_help = "This command is invoked initially and
         whenever a retry is triggered according to key mappings."
     )]
-    pub retry_command: Option<String>,
+    pub cmd: Option<String>,
 }
 
 impl Drop for Args {
@@ -187,7 +187,7 @@ async fn main() -> anyhow::Result<()> {
             Duration::from_millis(args.render_interval_millis),
             args.queue_capacity,
             args.case_insensitive,
-            args.retry_command.clone(),
+            args.cmd.clone(),
         )
         .await
         {
@@ -222,7 +222,7 @@ async fn main() -> anyhow::Result<()> {
                         },
                         highlight_style,
                         args.case_insensitive,
-                        args.retry_command.clone(),
+                        args.cmd.clone(),
                     )?;
 
                     // Re-enable raw mode and hide the cursor again here

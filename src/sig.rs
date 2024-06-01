@@ -78,7 +78,7 @@ pub async fn run(
     render_interval: Duration,
     queue_capacity: usize,
     case_insensitive: bool,
-    retry_command: Option<String>,
+    cmd: Option<String>,
 ) -> anyhow::Result<(Signal, VecDeque<String>)> {
     let keymap = ActiveKeySwitcher::new("default", keymap::default);
     let size = crossterm::terminal::size()?;
@@ -96,10 +96,8 @@ pub async fn run(
     let canceler = CancellationToken::new();
 
     let canceled = canceler.clone();
-    let streaming = if let Some(retry_command) = retry_command.clone() {
-        tokio::spawn(
-            async move { cmd::execute(&retry_command, tx, retrieval_timeout, canceled).await },
-        )
+    let streaming = if let Some(cmd) = cmd.clone() {
+        tokio::spawn(async move { cmd::execute(&cmd, tx, retrieval_timeout, canceled).await })
     } else {
         tokio::spawn(async move { stdin::streaming(tx, retrieval_timeout, canceled).await })
     };
@@ -145,7 +143,7 @@ pub async fn run(
     loop {
         let event = event::read()?;
         let mut text_editor = shared_text_editor.write().await;
-        signal = keymap.get()(&event, &mut text_editor, retry_command.clone())?;
+        signal = keymap.get()(&event, &mut text_editor, cmd.clone())?;
         if signal == Signal::GotoArchived || signal == Signal::GotoStreaming {
             break;
         }

@@ -8,7 +8,7 @@ use crate::Signal;
 pub fn default(
     event: &Event,
     state: &mut text_editor::State,
-    retry_command: Option<String>,
+    cmd: Option<String>,
 ) -> anyhow::Result<Signal> {
     match event {
         Event::Key(KeyEvent {
@@ -24,7 +24,7 @@ pub fn default(
             kind: KeyEventKind::Press,
             state: KeyEventState::NONE,
         }) => {
-            if retry_command.is_some() {
+            if cmd.is_some() {
                 return Ok(Signal::GotoStreaming);
             }
         }
