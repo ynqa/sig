@@ -9,17 +9,33 @@ pub type Keymap = fn(
     &Event,
     &mut Snapshot<text_editor::State>,
     &mut Snapshot<listbox::State>,
+    Option<String>,
 ) -> anyhow::Result<PromptSignal>;
 
 pub fn default(
     event: &Event,
     text_editor_snapshot: &mut Snapshot<text_editor::State>,
     logs_snapshot: &mut Snapshot<listbox::State>,
+    retry_command: Option<String>,
 ) -> anyhow::Result<PromptSignal> {
     let text_editor_state = text_editor_snapshot.after_mut();
     let logs_state = logs_snapshot.after_mut();
 
     match event {
+        Event::Key(KeyEvent {
+            code: KeyCode::Char('r'),
+            modifiers: KeyModifiers::CONTROL,
+            kind: KeyEventKind::Press,
+            state: KeyEventState::NONE,
+        }) => {
+            if retry_command.is_some() {
+                // Exiting archive mode here allows
+                // the caller to re-enter streaming mode,
+                // as it is running in an infinite loop.
+                return Ok(PromptSignal::Quit);
+            }
+        }
+
         Event::Key(KeyEvent {
             code: KeyCode::Char('c'),
             modifiers: KeyModifiers::CONTROL,

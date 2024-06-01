@@ -15,11 +15,11 @@ use promkit::{
     crossterm::{self, event, style::ContentStyle},
     grapheme::StyledGraphemes,
     switch::ActiveKeySwitcher,
-    text_editor, PaneFactory, PromptSignal,
+    text_editor, PaneFactory,
 };
 
 mod keymap;
-use crate::{cmd, stdin, terminal::Terminal};
+use crate::{cmd, stdin, terminal::Terminal, Signal};
 
 fn matched(queries: &[&str], line: &str, case_insensitive: bool) -> anyhow::Result<Vec<Match>> {
     let mut matched = Vec::new();
@@ -79,7 +79,7 @@ pub async fn run(
     queue_capacity: usize,
     case_insensitive: bool,
     retry_command: Option<String>,
-) -> anyhow::Result<VecDeque<String>> {
+) -> anyhow::Result<(Signal, VecDeque<String>)> {
     let keymap = ActiveKeySwitcher::new("default", keymap::default);
     let size = crossterm::terminal::size()?;
 
@@ -96,7 +96,7 @@ pub async fn run(
     let canceler = CancellationToken::new();
 
     let canceled = canceler.clone();
-    let streaming = if let Some(retry_command) = retry_command {
+    let streaming = if let Some(retry_command) = retry_command.clone() {
         tokio::spawn(
             async move { cmd::execute(&retry_command, tx, retrieval_timeout, canceled).await },
         )
@@ -141,11 +141,12 @@ pub async fn run(
         Ok(queue)
     });
 
+    let mut signal: Signal;
     loop {
         let event = event::read()?;
         let mut text_editor = shared_text_editor.write().await;
-        let signal = keymap.get()(&event, &mut text_editor)?;
-        if signal == PromptSignal::Quit {
+        signal = keymap.get()(&event, &mut text_editor, retry_command.clone())?;
+        if signal == Signal::GotoArchived || signal == Signal::GotoStreaming {
             break;
         }
 
@@ -158,5 +159,5 @@ pub async fn run(
     canceler.cancel();
     let _: anyhow::Result<(), anyhow::Error> = streaming.await?;
 
-    keeping.await?
+    Ok((signal, keeping.await??))
 }

@@ -1,16 +1,33 @@
 use promkit::{
     crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyEventState, KeyModifiers},
-    text_editor, PromptSignal,
+    text_editor,
 };
 
-pub fn default(event: &Event, state: &mut text_editor::State) -> anyhow::Result<PromptSignal> {
+use crate::Signal;
+
+pub fn default(
+    event: &Event,
+    state: &mut text_editor::State,
+    retry_command: Option<String>,
+) -> anyhow::Result<Signal> {
     match event {
         Event::Key(KeyEvent {
             code: KeyCode::Char('f'),
             modifiers: KeyModifiers::CONTROL,
             kind: KeyEventKind::Press,
             state: KeyEventState::NONE,
-        }) => return Ok(PromptSignal::Quit),
+        }) => return Ok(Signal::GotoArchived),
+
+        Event::Key(KeyEvent {
+            code: KeyCode::Char('r'),
+            modifiers: KeyModifiers::CONTROL,
+            kind: KeyEventKind::Press,
+            state: KeyEventState::NONE,
+        }) => {
+            if retry_command.is_some() {
+                return Ok(Signal::GotoStreaming);
+            }
+        }
 
         Event::Key(KeyEvent {
             code: KeyCode::Char('c'),
@@ -82,5 +99,5 @@ pub fn default(event: &Event, state: &mut text_editor::State) -> anyhow::Result<
 
         _ => (),
     }
-    Ok(PromptSignal::Continue)
+    Ok(Signal::Continue)
 }

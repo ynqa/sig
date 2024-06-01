@@ -40,7 +40,12 @@ impl promkit::Renderer for Archived {
     }
 
     fn evaluate(&mut self, event: &Event) -> anyhow::Result<PromptSignal> {
-        let signal = self.keymap.get()(event, &mut self.text_editor_snapshot, &mut self.lines);
+        let signal = self.keymap.get()(
+            event,
+            &mut self.text_editor_snapshot,
+            &mut self.lines,
+            self.retry_command.clone(),
+        );
         if self
             .text_editor_snapshot
             .after()
