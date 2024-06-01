@@ -108,14 +108,26 @@ async fn main() -> anyhow::Result<()> {
     if args.archived {
         let (tx, mut rx) = mpsc::channel(1);
 
-        tokio::spawn(async move {
-            stdin::streaming(
-                tx,
-                Duration::from_millis(args.retrieval_timeout_millis),
-                CancellationToken::new(),
-            )
-            .await
-        });
+        if let Some(cmd) = args.cmd.clone() {
+            tokio::spawn(async move {
+                cmd::execute(
+                    &cmd,
+                    tx,
+                    Duration::from_millis(args.retrieval_timeout_millis),
+                    CancellationToken::new(),
+                )
+                .await
+            });
+        } else {
+            tokio::spawn(async move {
+                stdin::streaming(
+                    tx,
+                    Duration::from_millis(args.retrieval_timeout_millis),
+                    CancellationToken::new(),
+                )
+                .await
+            });
+        }
 
         let mut queue = VecDeque::with_capacity(args.queue_capacity);
         loop {
