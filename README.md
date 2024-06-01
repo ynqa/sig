@@ -87,6 +87,22 @@ in
   }
 ```
 
+## Examples
+
+```bash
+stern --context kind-kind etcd |& sig
+# or
+sig --cmd "stern --context kind-kind etcd" # this is able to retry command by ctrl+r.
+```
+
+### Archived mode
+
+```bash
+cat README.md |& sig -a
+# or
+sig -a --cmd "cat README.md"
+```
+
 ## Keymap
 
 | Key                  | Action
@@ -119,6 +135,17 @@ in
 Interactive grep (for streaming)
 
 Usage: sig [OPTIONS]
+
+Examples:
+
+$ stern --context kind-kind etcd |& sig
+Or the method to retry command by pressing ctrl+r:
+$ sig --cmd "stern --context kind-kind etcd"
+
+Archived mode:
+$ cat README.md |& sig -a
+Or
+$ sig -a --cmd "cat README.md"
 
 Options:
       --retrieval-timeout <RETRIEVAL_TIMEOUT_MILLIS>

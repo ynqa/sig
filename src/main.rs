@@ -34,6 +34,29 @@ pub enum Signal {
 /// Interactive grep (for streaming)
 #[derive(Parser)]
 #[command(name = "sig", version)]
+#[command(
+    name = "sig",
+    version,
+    help_template = "
+{about}
+
+Usage: {usage}
+
+Examples:
+
+$ stern --context kind-kind etcd |& sig
+Or the method to retry command by pressing ctrl+r:
+$ sig --cmd \"stern --context kind-kind etcd\"
+
+Archived mode:
+$ cat README.md |& sig -a
+Or
+$ sig -a --cmd \"cat README.md\"
+
+Options:
+{options}
+"
+)]
 pub struct Args {
     #[arg(
         long = "retrieval-timeout",
