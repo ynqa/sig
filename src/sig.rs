@@ -19,7 +19,7 @@ use promkit::{
 };
 
 mod keymap;
-use crate::{stdin, terminal::Terminal};
+use crate::{cmd, stdin, terminal::Terminal};
 
 fn matched(queries: &[&str], line: &str, case_insensitive: bool) -> anyhow::Result<Vec<Match>> {
     let mut matched = Vec::new();
@@ -78,6 +78,7 @@ pub async fn run(
     render_interval: Duration,
     queue_capacity: usize,
     case_insensitive: bool,
+    retry_command: Option<String>,
 ) -> anyhow::Result<VecDeque<String>> {
     let keymap = ActiveKeySwitcher::new("default", keymap::default);
     let size = crossterm::terminal::size()?;
@@ -95,8 +96,13 @@ pub async fn run(
     let canceler = CancellationToken::new();
 
     let canceled = canceler.clone();
-    let streaming =
-        tokio::spawn(async move { stdin::streaming(tx, retrieval_timeout, canceled).await });
+    let streaming = if let Some(retry_command) = retry_command {
+        tokio::spawn(
+            async move { cmd::execute(&retry_command, tx, retrieval_timeout, canceled).await },
+        )
+    } else {
+        tokio::spawn(async move { stdin::streaming(tx, retrieval_timeout, canceled).await })
+    };
 
     let keeping: JoinHandle<anyhow::Result<VecDeque<String>>> = tokio::spawn(async move {
         let mut queue = VecDeque::with_capacity(queue_capacity);

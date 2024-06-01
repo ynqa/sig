@@ -19,6 +19,7 @@ use promkit::{
 };
 
 mod archived;
+mod cmd;
 mod sig;
 mod stdin;
 mod terminal;
@@ -179,6 +180,7 @@ async fn main() -> anyhow::Result<()> {
             Duration::from_millis(args.render_interval_millis),
             args.queue_capacity,
             args.case_insensitive,
+            args.retry_command.clone(),
         )
         .await?;
 
