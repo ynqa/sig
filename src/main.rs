@@ -19,13 +19,44 @@ use promkit::{
 };
 
 mod archived;
+mod cmd;
 mod sig;
 mod stdin;
 mod terminal;
 
+#[derive(Eq, PartialEq)]
+pub enum Signal {
+    Continue,
+    GotoArchived,
+    GotoStreaming,
+}
+
 /// Interactive grep (for streaming)
 #[derive(Parser)]
 #[command(name = "sig", version)]
+#[command(
+    name = "sig",
+    version,
+    help_template = "
+{about}
+
+Usage: {usage}
+
+Examples:
+
+$ stern --context kind-kind etcd |& sig
+Or the method to retry command by pressing ctrl+r:
+$ sig --cmd \"stern --context kind-kind etcd\"
+
+Archived mode:
+$ cat README.md |& sig -a
+Or
+$ sig -a --cmd \"cat README.md\"
+
+Options:
+{options}
+"
+)]
 pub struct Args {
     #[arg(
         long = "retrieval-timeout",
@@ -71,6 +102,14 @@ pub struct Args {
         help = "Case insensitive search."
     )]
     pub case_insensitive: bool,
+
+    #[arg(
+        long = "cmd",
+        help = "Command to execute on initial and retries.",
+        long_help = "This command is invoked initially and
+        whenever a retry is triggered according to key mappings."
+    )]
+    pub cmd: Option<String>,
 }
 
 impl Drop for Args {
@@ -92,14 +131,26 @@ async fn main() -> anyhow::Result<()> {
     if args.archived {
         let (tx, mut rx) = mpsc::channel(1);
 
-        tokio::spawn(async move {
-            stdin::streaming(
-                tx,
-                Duration::from_millis(args.retrieval_timeout_millis),
-                CancellationToken::new(),
-            )
-            .await
-        });
+        if let Some(cmd) = args.cmd.clone() {
+            tokio::spawn(async move {
+                cmd::execute(
+                    &cmd,
+                    tx,
+                    Duration::from_millis(args.retrieval_timeout_millis),
+                    CancellationToken::new(),
+                )
+                .await
+            });
+        } else {
+            tokio::spawn(async move {
+                stdin::streaming(
+                    tx,
+                    Duration::from_millis(args.retrieval_timeout_millis),
+                    CancellationToken::new(),
+                )
+                .await
+            });
+        }
 
         let mut queue = VecDeque::with_capacity(args.queue_capacity);
         loop {
@@ -149,9 +200,11 @@ async fn main() -> anyhow::Result<()> {
             },
             highlight_style,
             args.case_insensitive,
+            // In archived mode, command for retry is meaningless.
+            None,
         )?;
     } else {
-        let queue = sig::run(
+        while let Ok((signal, queue)) = sig::run(
             text_editor::State {
                 texteditor: Default::default(),
                 history: Default::default(),
@@ -169,39 +222,62 @@ async fn main() -> anyhow::Result<()> {
             Duration::from_millis(args.render_interval_millis),
             args.queue_capacity,
             args.case_insensitive,
+            args.cmd.clone(),
         )
-        .await?;
+        .await
+        {
+            crossterm::execute!(
+                io::stdout(),
+                crossterm::terminal::Clear(crossterm::terminal::ClearType::All),
+                crossterm::terminal::Clear(crossterm::terminal::ClearType::Purge),
+                cursor::MoveTo(0, 0),
+            )?;
 
-        crossterm::execute!(
-            io::stdout(),
-            crossterm::terminal::Clear(crossterm::terminal::ClearType::All),
-            crossterm::terminal::Clear(crossterm::terminal::ClearType::Purge),
-            cursor::MoveTo(0, 0),
-        )?;
+            match signal {
+                Signal::GotoArchived => {
+                    archived::run(
+                        text_editor::State {
+                            texteditor: Default::default(),
+                            history: Default::default(),
+                            prefix: String::from("❯❯❯ "),
+                            mask: Default::default(),
+                            prefix_style: StyleBuilder::new().fgc(Color::DarkBlue).build(),
+                            active_char_style: StyleBuilder::new().bgc(Color::DarkCyan).build(),
+                            inactive_char_style: StyleBuilder::new().build(),
+                            edit_mode: Default::default(),
+                            word_break_chars: Default::default(),
+                            lines: Default::default(),
+                        },
+                        listbox::State {
+                            listbox: listbox::Listbox::from_iter(queue),
+                            cursor: String::from("❯ "),
+                            active_item_style: None,
+                            inactive_item_style: None,
+                            lines: Default::default(),
+                        },
+                        highlight_style,
+                        args.case_insensitive,
+                        args.cmd.clone(),
+                    )?;
 
-        archived::run(
-            text_editor::State {
-                texteditor: Default::default(),
-                history: Default::default(),
-                prefix: String::from("❯❯❯ "),
-                mask: Default::default(),
-                prefix_style: StyleBuilder::new().fgc(Color::DarkBlue).build(),
-                active_char_style: StyleBuilder::new().bgc(Color::DarkCyan).build(),
-                inactive_char_style: StyleBuilder::new().build(),
-                edit_mode: Default::default(),
-                word_break_chars: Default::default(),
-                lines: Default::default(),
-            },
-            listbox::State {
-                listbox: listbox::Listbox::from_iter(queue),
-                cursor: String::from("❯ "),
-                active_item_style: None,
-                inactive_item_style: None,
-                lines: Default::default(),
-            },
-            highlight_style,
-            args.case_insensitive,
-        )?;
+                    // Re-enable raw mode and hide the cursor again here
+                    // because they are disabled and shown, respectively, by promkit.
+                    enable_raw_mode()?;
+                    execute!(io::stdout(), cursor::Hide)?;
+
+                    crossterm::execute!(
+                        io::stdout(),
+                        crossterm::terminal::Clear(crossterm::terminal::ClearType::All),
+                        crossterm::terminal::Clear(crossterm::terminal::ClearType::Purge),
+                        cursor::MoveTo(0, 0),
+                    )?;
+                }
+                Signal::GotoStreaming => {
+                    continue;
+                }
+                _ => {}
+            }
+        }
     }
 
     Ok(())

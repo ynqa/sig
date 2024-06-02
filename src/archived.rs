@@ -20,6 +20,7 @@ struct Archived {
     lines: Snapshot<listbox::State>,
     highlight_style: ContentStyle,
     case_insensitive: bool,
+    cmd: Option<String>,
 }
 
 impl promkit::Finalizer for Archived {
@@ -39,7 +40,12 @@ impl promkit::Renderer for Archived {
     }
 
     fn evaluate(&mut self, event: &Event) -> anyhow::Result<PromptSignal> {
-        let signal = self.keymap.get()(event, &mut self.text_editor_snapshot, &mut self.lines);
+        let signal = self.keymap.get()(
+            event,
+            &mut self.text_editor_snapshot,
+            &mut self.lines,
+            self.cmd.clone(),
+        );
         if self
             .text_editor_snapshot
             .after()
@@ -85,6 +91,7 @@ pub fn run(
     lines: listbox::State,
     highlight_style: ContentStyle,
     case_insensitive: bool,
+    cmd: Option<String>,
 ) -> anyhow::Result<()> {
     Prompt {
         renderer: Archived {
@@ -93,6 +100,7 @@ pub fn run(
             lines: Snapshot::new(lines),
             highlight_style,
             case_insensitive,
+            cmd,
         },
     }
     .run()

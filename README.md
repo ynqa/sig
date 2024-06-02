@@ -12,8 +12,16 @@ Interactive grep
 - Interactive grep (for streaming)
   - *sig* allows users to interactively search through (streaming) data,
     updating results in real-time.
+- Re-execute command
+  - If `--cmd` is specified instread of piping data to *sig*,
+    the command will be executed on initial and retries.
+  - This feature is designed to address the issue where data streams
+    past while the user is fine-tuning the search criteria.
+    In other words, even if the data has already passed,
+    executing the command again allows
+    the retrieval of the data for re-evaluation.
 - Archived mode
-  - In Archived mode, since there is no seeking capability
+  - In archived mode, since there is no seeking capability
     for streaming data received through a pipe,
     it is not possible to search backwards without exiting the process.
     Therefore, in *sig*, the latest N entries of streaming data are saved,
@@ -79,11 +87,28 @@ in
   }
 ```
 
+## Examples
+
+```bash
+stern --context kind-kind etcd |& sig
+# or
+sig --cmd "stern --context kind-kind etcd" # this is able to retry command by ctrl+r.
+```
+
+### Archived mode
+
+```bash
+cat README.md |& sig -a
+# or
+sig -a --cmd "cat README.md"
+```
+
 ## Keymap
 
 | Key                  | Action
 | :-                   | :-
 | <kbd>Ctrl + C</kbd>  | Exit `sig`
+| <kbd>Ctrl + R</kbd>  | Retry command if `--cmd` is specified
 | <kbd>Ctrl + F</kbd>  | Enter Archived mode
 | <kbd>←</kbd>         | Move the cursor one character to the left
 | <kbd>→</kbd>         | Move the cursor one character to the right
@@ -111,6 +136,17 @@ Interactive grep (for streaming)
 
 Usage: sig [OPTIONS]
 
+Examples:
+
+$ stern --context kind-kind etcd |& sig
+Or the method to retry command by pressing ctrl+r:
+$ sig --cmd "stern --context kind-kind etcd"
+
+Archived mode:
+$ cat README.md |& sig -a
+Or
+$ sig -a --cmd "cat README.md"
+
 Options:
       --retrieval-timeout <RETRIEVAL_TIMEOUT_MILLIS>
           Timeout to read a next line from the stream in milliseconds. [default: 10]
@@ -122,6 +158,8 @@ Options:
           Archived mode to grep through static data.
   -i, --ignore-case
           Case insensitive search.
+      --cmd <CMD>
+          Command to execute on initial and retries.
   -h, --help
           Print help (see more with '--help')
   -V, --version
