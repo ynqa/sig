@@ -46,6 +46,12 @@ brew install ynqa/tap/sigrs
 cargo install sigrs
 ```
 
+### Arch Linux
+
+```bash
+pacman -S sig
+```
+
 ### Nix (flakes)
 
 Add it as an input to your flake:
