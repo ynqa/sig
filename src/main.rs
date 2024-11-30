@@ -33,7 +33,6 @@ pub enum Signal {
 
 /// Interactive grep (for streaming)
 #[derive(Parser)]
-#[command(name = "sig", version)]
 #[command(
     name = "sig",
     version,
