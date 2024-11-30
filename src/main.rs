@@ -33,7 +33,6 @@ pub enum Signal {
 
 /// Interactive grep (for streaming)
 #[derive(Parser)]
-#[command(name = "sig", version)]
 #[command(
     name = "sig",
     version,
@@ -192,7 +191,7 @@ async fn main() -> anyhow::Result<()> {
                 lines: Default::default(),
             },
             listbox::State {
-                listbox: listbox::Listbox::from_iter(queue),
+                listbox: listbox::Listbox::from_displayable(queue),
                 cursor: String::from("❯ "),
                 active_item_style: None,
                 inactive_item_style: None,
@@ -249,7 +248,7 @@ async fn main() -> anyhow::Result<()> {
                             lines: Default::default(),
                         },
                         listbox::State {
-                            listbox: listbox::Listbox::from_iter(queue),
+                            listbox: listbox::Listbox::from_displayable(queue),
                             cursor: String::from("❯ "),
                             active_item_style: None,
                             inactive_item_style: None,

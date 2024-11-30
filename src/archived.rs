@@ -26,7 +26,7 @@ struct Archived {
 impl promkit::Finalizer for Archived {
     type Return = ();
 
-    fn finalize(&self) -> anyhow::Result<Self::Return> {
+    fn finalize(&mut self) -> anyhow::Result<Self::Return> {
         Ok(())
     }
 }
@@ -80,7 +80,7 @@ impl promkit::Renderer for Archived {
                 })
                 .collect();
 
-            self.lines.after_mut().listbox = listbox::Listbox::from_iter(list);
+            self.lines.after_mut().listbox = listbox::Listbox::from_styled_graphemes(list);
         }
         signal
     }
