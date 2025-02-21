@@ -102,6 +102,7 @@ pub fn run(
             case_insensitive,
             cmd,
         },
+        writer: Box::new(std::io::stdout()),
     }
     .run()
 }
