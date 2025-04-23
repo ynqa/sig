@@ -1,6 +1,6 @@
 # sig
 
-[![ci](https://github.com/ynqa/sig/actions/workflows/ci.yml/badge.svg)](https://github.com/ynqa/sig/actions/workflows/ci.yml)
+[![ci](https://github.com/ynqa/sig/actions/workflows/ci.yml/badge.svg)](https://github.com/ynqa/sig/actions/workflows/ci.yml)[![🧪 Snap Builds](https://github.com/ynqa/sig/workflows/%F0%9F%A7%AA%20Snap%20Builds/badge.svg)]
 
 Interactive grep
 
@@ -59,6 +59,11 @@ Add it as an input to your flake:
 inputs = {
   sig.url = 'github:ynqa/sig/<optional-ref>'
 }
+```
+
+### Snap [![jnv](https://snapcraft.io//sig/badge.svg)](https://snapcraft.io/sig)
+```bash
+sudo snap install jnv
 ```
 
 Create a shell with it:
