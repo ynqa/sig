@@ -63,7 +63,7 @@ inputs = {
 
 ### Snap [![jnv](https://snapcraft.io//sig/badge.svg)](https://snapcraft.io/sig)
 ```bash
-sudo snap install jnv
+sudo snap install sig
 ```
 
 Create a shell with it:
