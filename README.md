@@ -61,7 +61,7 @@ inputs = {
 }
 ```
 
-### Snap [![jnv](https://snapcraft.io//sig/badge.svg)](https://snapcraft.io/sig)
+### Snap [![sig](https://snapcraft.io//sig/badge.svg)](https://snapcraft.io/sig)
 ```bash
 sudo snap install sig
 ```
