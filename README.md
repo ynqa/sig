@@ -46,6 +46,14 @@ brew install ynqa/tap/sigrs
 cargo install sigrs
 ```
 
+### X-CMD
+
+If you're an [x-cmd](https://x-cmd.com/install/sig) user, you can install it with the following command:
+
+```bash
+x install sig
+```
+
 ### Arch Linux
 
 ```bash
