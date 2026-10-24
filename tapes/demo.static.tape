@@ -42,7 +42,7 @@ Sleep 1500ms
 Down
 Sleep 800ms
 Ctrl+U
-Type "worker.*(timeout|retry)"
+Type "worker.*timeout|worker.*retry"
 Sleep 2500ms
 
 Hide
