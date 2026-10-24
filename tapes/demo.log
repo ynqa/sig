@@ -1,0 +1,16 @@
+12:00:00 INFO  api     Listening on :8080
+12:00:01 INFO  worker  Started background jobs
+12:00:02 INFO  api     GET /health status=200
+12:00:03 WARN  cache   Miss for key=session:42
+12:00:04 INFO  worker  Completed job=1001
+12:00:05 ERROR worker  Request timeout job=1002
+12:00:06 INFO  api     GET /books status=200
+12:00:07 WARN  worker  Scheduling retry job=1002
+12:00:08 INFO  cache   Stored key=session:42
+12:00:09 INFO  worker  Completed job=1002 after retry
+12:00:10 ERROR api     GET /search status=503
+12:00:11 INFO  api     GET /health status=200
+12:00:12 WARN  cache   Connection slow latency=240ms
+12:00:13 ERROR worker  Request timeout job=1003
+12:00:14 INFO  worker  Completed job=1004
+12:00:15 INFO  api     GET /books status=200
